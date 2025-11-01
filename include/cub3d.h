@@ -12,8 +12,8 @@
 # define WIN_H 600
 # define TEX_W 64
 # define TEX_H 64
-# define MOVE_SPEED 0.08
-# define ROT_SPEED 0.05
+# define MOVE_SPEED 0.01
+# define ROT_SPEED 0.01
 
 # define TEX_NO 0
 # define TEX_SO 1
