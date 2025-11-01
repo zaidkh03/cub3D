@@ -1,10 +1,10 @@
 #include "cub3d.h"
 
-static int  match_key(int keycode, int mac, int linux)
+static int  match_key(int keycode, int mac_code, int linux_code)
 {
-    if (keycode == mac)
+    if (keycode == mac_code)
         return (1);
-    if (keycode == linux)
+    if (keycode == linux_code)
         return (1);
     return (0);
 }
