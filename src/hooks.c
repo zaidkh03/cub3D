@@ -1,46 +1,37 @@
 #include "cub3d.h"
 
-static int  match_key(int keycode, int mac_code, int linux_code)
-{
-    if (keycode == mac_code)
-        return (1);
-    if (keycode == linux_code)
-        return (1);
-    return (0);
-}
-
 int handle_key_press(int keycode, t_cub *cub)
 {
-    if (match_key(keycode, 13, 119))
+    if (keycode == K_W)
         cub->keys.w = 1;
-    if (match_key(keycode, 1, 115))
+    if (keycode == K_S)
         cub->keys.s = 1;
-    if (match_key(keycode, 0, 97))
+    if (keycode == K_A)
         cub->keys.a = 1;
-    if (match_key(keycode, 2, 100))
+    if (keycode == K_D)
         cub->keys.d = 1;
-    if (match_key(keycode, 123, 65361))
+    if (keycode == K_LEFT)
         cub->keys.left = 1;
-    if (match_key(keycode, 124, 65363))
+    if (keycode == K_RIGHT)
         cub->keys.right = 1;
-    if (match_key(keycode, 53, 65307))
+    if (keycode == K_ESC)
         handle_close(cub);
     return (0);
 }
 
 int handle_key_release(int keycode, t_cub *cub)
 {
-    if (match_key(keycode, 13, 119))
+    if (keycode == K_W)
         cub->keys.w = 0;
-    if (match_key(keycode, 1, 115))
+    if (keycode == K_S)
         cub->keys.s = 0;
-    if (match_key(keycode, 0, 97))
+    if (keycode == K_A)
         cub->keys.a = 0;
-    if (match_key(keycode, 2, 100))
+    if (keycode == K_D)
         cub->keys.d = 0;
-    if (match_key(keycode, 123, 65361))
+    if (keycode == K_LEFT)
         cub->keys.left = 0;
-    if (match_key(keycode, 124, 65363))
+    if (keycode == K_RIGHT)
         cub->keys.right = 0;
     return (0);
 }

@@ -2,33 +2,33 @@
 
 static void set_orientation(t_player *player, char dir)
 {
-    if (dir == 'N')
+    const char      symbols[4] = {'N', 'S', 'E', 'W'};
+    const double    dirs[4][2] = {
+        {0, -1},
+        {0, 1},
+        {1, 0},
+        {-1, 0}
+    };
+    const double    planes[4][2] = {
+        {0.66, 0},
+        {-0.66, 0},
+        {0, 0.66},
+        {0, -0.66}
+    };
+    int             i;
+
+    i = 0;
+    while (i < 4)
     {
-        player->dir_x = 0;
-        player->dir_y = -1;
-        player->plane_x = 0.66;
-        player->plane_y = 0;
-    }
-    if (dir == 'S')
-    {
-        player->dir_x = 0;
-        player->dir_y = 1;
-        player->plane_x = -0.66;
-        player->plane_y = 0;
-    }
-    if (dir == 'E')
-    {
-        player->dir_x = 1;
-        player->dir_y = 0;
-        player->plane_x = 0;
-        player->plane_y = 0.66;
-    }
-    if (dir == 'W')
-    {
-        player->dir_x = -1;
-        player->dir_y = 0;
-        player->plane_x = 0;
-        player->plane_y = -0.66;
+        if (symbols[i] == dir)
+        {
+            player->dir_x = dirs[i][0];
+            player->dir_y = dirs[i][1];
+            player->plane_x = planes[i][0];
+            player->plane_y = planes[i][1];
+            return ;
+        }
+        i++;
     }
 }
 

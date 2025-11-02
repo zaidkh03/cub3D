@@ -11,7 +11,7 @@ static void init_ray(t_cub *cub, int x, t_ray *ray)
     ray->map_y = (int)cub->player.y;
 }
 
-static void set_delta(t_ray *ray)
+static void prepare_ray(t_cub *cub, t_ray *ray)
 {
     if (ray->dir_x == 0)
         ray->delta_x = 1e30;
@@ -21,10 +21,6 @@ static void set_delta(t_ray *ray)
         ray->delta_y = 1e30;
     else
         ray->delta_y = fabs(1.0 / ray->dir_y);
-}
-
-static void set_step(t_cub *cub, t_ray *ray)
-{
     if (ray->dir_x < 0)
     {
         ray->step_x = -1;
@@ -33,7 +29,8 @@ static void set_step(t_cub *cub, t_ray *ray)
     else
     {
         ray->step_x = 1;
-        ray->side_dist_x = (ray->map_x + 1.0 - cub->player.x) * ray->delta_x;
+        ray->side_dist_x = (ray->map_x + 1.0 - cub->player.x)
+            * ray->delta_x;
     }
     if (ray->dir_y < 0)
     {
@@ -43,7 +40,8 @@ static void set_step(t_cub *cub, t_ray *ray)
     else
     {
         ray->step_y = 1;
-        ray->side_dist_y = (ray->map_y + 1.0 - cub->player.y) * ray->delta_y;
+        ray->side_dist_y = (ray->map_y + 1.0 - cub->player.y)
+            * ray->delta_y;
     }
 }
 
@@ -66,8 +64,9 @@ static void perform_dda(t_cub *cub, t_ray *ray)
             ray->map_y += ray->step_y;
             ray->side = 1;
         }
-        if (ray->map_x < 0 || ray->map_x >= cub->map.width ||
-            ray->map_y < 0 || ray->map_y >= cub->map.height)
+        if (ray->map_x < 0 || ray->map_x >= cub->map.width)
+            fatal_cub(cub, "Ray escaped map bounds");
+        if (ray->map_y < 0 || ray->map_y >= cub->map.height)
             fatal_cub(cub, "Ray escaped map bounds");
         if (cub->map.grid[ray->map_y][ray->map_x] != '0')
             hit = 1;
@@ -76,18 +75,24 @@ static void perform_dda(t_cub *cub, t_ray *ray)
 
 static void compute_distance(t_cub *cub, t_ray *ray)
 {
+    double  offset;
+
     if (ray->side == 0)
-        ray->perp_dist = (ray->map_x - cub->player.x +
-                (1 - ray->step_x) / 2.0) / ray->dir_x;
+    {
+        offset = (1 - ray->step_x) / 2.0;
+        ray->perp_dist = (ray->map_x - cub->player.x + offset)
+            / ray->dir_x;
+        ray->wall_x = cub->player.y + ray->perp_dist * ray->dir_y;
+    }
     else
-        ray->perp_dist = (ray->map_y - cub->player.y +
-                (1 - ray->step_y) / 2.0) / ray->dir_y;
+    {
+        offset = (1 - ray->step_y) / 2.0;
+        ray->perp_dist = (ray->map_y - cub->player.y + offset)
+            / ray->dir_y;
+        ray->wall_x = cub->player.x + ray->perp_dist * ray->dir_x;
+    }
     if (ray->perp_dist <= 0)
         ray->perp_dist = 0.1;
-    if (ray->side == 0)
-        ray->wall_x = cub->player.y + ray->perp_dist * ray->dir_y;
-    else
-        ray->wall_x = cub->player.x + ray->perp_dist * ray->dir_x;
     ray->wall_x -= floor(ray->wall_x);
 }
 
@@ -96,8 +101,7 @@ int perform_raycast(t_cub *cub, int x, t_ray *ray)
     int height;
 
     init_ray(cub, x, ray);
-    set_delta(ray);
-    set_step(cub, ray);
+    prepare_ray(cub, ray);
     perform_dda(cub, ray);
     compute_distance(cub, ray);
     height = (int)(WIN_H / ray->perp_dist);

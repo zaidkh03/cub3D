@@ -12,8 +12,16 @@
 # define WIN_H 600
 # define TEX_W 64
 # define TEX_H 64
-# define MOVE_SPEED 0.01
-# define ROT_SPEED 0.01
+# define MOVE_SPEED 0.08
+# define ROT_SPEED 0.05
+
+# define K_ESC 65307
+# define K_W 119
+# define K_A 97
+# define K_S 115
+# define K_D 100
+# define K_LEFT 65361
+# define K_RIGHT 65363
 
 # define TEX_NO 0
 # define TEX_SO 1
@@ -104,6 +112,7 @@ typedef struct s_parse
 }   t_parse;
 
 int     parse_file(t_cub *cub, const char *path);
+void    parse_line_data(t_parse *parse, char *line);
 void    validate_map(t_parse *parse);
 void    build_map(t_cub *cub, t_parse *parse);
 void    init_player(t_cub *cub);
@@ -112,6 +121,8 @@ void    load_textures(t_cub *cub);
 void    start_loop(t_cub *cub);
 void    render(t_cub *cub);
 void    draw_column(t_cub *cub, int x, t_ray *ray, int height);
+int     select_texture(t_ray *ray);
+int     select_tex_x(t_ray *ray, t_img *tex);
 int     perform_raycast(t_cub *cub, int x, t_ray *ray);
 int     handle_close(t_cub *cub);
 int     handle_key_press(int keycode, t_cub *cub);

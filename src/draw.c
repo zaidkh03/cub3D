@@ -1,5 +1,14 @@
 #include "cub3d.h"
 
+typedef struct s_slice
+{
+    int start;
+    int end;
+    int height;
+    int x;
+    int tex_x;
+}   t_slice;
+
 static void put_pixel(t_img *img, int x, int y, int color)
 {
     char    *dst;
@@ -10,105 +19,72 @@ static void put_pixel(t_img *img, int x, int y, int color)
     *(unsigned int *)dst = color;
 }
 
-static int  select_texture(t_ray *ray)
+static void draw_background(t_cub *cub, t_slice *slice)
 {
-    if (ray->side == 0)
+    int y;
+
+    y = 0;
+    while (y < slice->start)
     {
-        if (ray->dir_x > 0)
-            return (TEX_WE);
-        return (TEX_EA);
+        put_pixel(&cub->mlx.img, slice->x, y, cub->ceiling_color);
+        y++;
     }
-    if (ray->dir_y > 0)
-        return (TEX_NO);
-    return (TEX_SO);
+    y = slice->end + 1;
+    while (y < WIN_H)
+    {
+        put_pixel(&cub->mlx.img, slice->x, y, cub->floor_color);
+        y++;
+    }
 }
 
-static int  texture_color(t_img *tex, int x, int y)
+static void compute_bounds(t_slice *slice)
 {
-    char    *addr;
-
-    addr = tex->addr + y * tex->line_len + x * (tex->bpp / 8);
-    return (*(unsigned int *)addr);
+    slice->start = WIN_H / 2 - slice->height / 2;
+    slice->end = WIN_H / 2 + slice->height / 2;
+    if (slice->start < 0)
+        slice->start = 0;
+    if (slice->end >= WIN_H)
+        slice->end = WIN_H - 1;
 }
 
-static void draw_texture_pixels(t_cub *cub, int x, int start, int end,
-        t_img *tex, int tex_x, int height)
+static void draw_slice(t_cub *cub, t_slice *slice, t_img *tex)
 {
     double  step;
     double  tex_pos;
     int     y;
+    int     tex_y;
+    char    *addr;
 
-    step = (double)tex->height / height;
-    tex_pos = (start - WIN_H / 2 + height / 2) * step;
-    y = start;
-    while (y <= end)
+    step = (double)tex->height / slice->height;
+    tex_pos = (slice->start - WIN_H / 2 + slice->height / 2) * step;
+    y = slice->start;
+    while (y <= slice->end)
     {
         if (tex_pos < 0)
             tex_pos = 0;
         if (tex_pos >= tex->height)
             tex_pos = tex->height - 1;
-        put_pixel(&cub->mlx.img, x, y,
-            texture_color(tex, tex_x, (int)tex_pos));
+        tex_y = (int)tex_pos;
+        addr = tex->addr + tex_y * tex->line_len
+            + slice->tex_x * (tex->bpp / 8);
+        put_pixel(&cub->mlx.img, slice->x, y, *(unsigned int *)addr);
         tex_pos += step;
         y++;
     }
 }
 
-static void draw_background(t_cub *cub, int x, int start, int end)
-{
-    int y;
-
-    y = 0;
-    while (y < start)
-    {
-        put_pixel(&cub->mlx.img, x, y, cub->ceiling_color);
-        y++;
-    }
-    y = end + 1;
-    while (y < WIN_H)
-    {
-        put_pixel(&cub->mlx.img, x, y, cub->floor_color);
-        y++;
-    }
-}
-
-static void compute_bounds(int *start, int *end, int height)
-{
-    *start = WIN_H / 2 - height / 2;
-    *end = WIN_H / 2 + height / 2;
-    if (*start < 0)
-        *start = 0;
-    if (*end >= WIN_H)
-        *end = WIN_H - 1;
-}
-
-static int  select_tex_x(t_ray *ray, t_img *tex)
-{
-    int tex_x;
-
-    tex_x = (int)(ray->wall_x * tex->width);
-    if (tex_x < 0)
-        tex_x = 0;
-    if (ray->side == 0 && ray->dir_x > 0)
-        tex_x = tex->width - tex_x - 1;
-    if (ray->side == 1 && ray->dir_y < 0)
-        tex_x = tex->width - tex_x - 1;
-    if (tex_x >= tex->width)
-        tex_x = tex->width - 1;
-    return (tex_x);
-}
-
 void    draw_column(t_cub *cub, int x, t_ray *ray, int height)
 {
+    t_slice slice;
     t_img   *tex;
-    int     draw_start;
-    int     draw_end;
 
     if (height < 1)
         height = 1;
-    compute_bounds(&draw_start, &draw_end, height);
-    draw_background(cub, x, draw_start, draw_end);
+    slice.height = height;
+    slice.x = x;
+    compute_bounds(&slice);
+    draw_background(cub, &slice);
     tex = &cub->textures[select_texture(ray)];
-    draw_texture_pixels(cub, x, draw_start, draw_end, tex,
-        select_tex_x(ray, tex), height);
+    slice.tex_x = select_tex_x(ray, tex);
+    draw_slice(cub, &slice, tex);
 }
