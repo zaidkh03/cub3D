@@ -1,5 +1,6 @@
 NAME = cub3D
 CC = cc
+RM = rm -rf
 CFLAGS = -Wall -Wextra -Werror
 IFLAGS = -Iinclude -Ilibft
 LFLAGS = -lmlx -lXext -lX11 -lm
@@ -28,12 +29,12 @@ $(OBJ_DIR):
 
 clean:
 	$(MAKE) -C libft clean
-	rm -f $(OBJS)
-	rm -rf $(OBJ_DIR)
+	$(RM) $(OBJS)
+	$(RM) $(OBJ_DIR)
 
 fclean: clean
 	$(MAKE) -C libft fclean
-	rm -f $(NAME)
+	$(RM) $(NAME)
 
 re: fclean all
 
