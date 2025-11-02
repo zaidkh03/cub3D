@@ -1,22 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rotate.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: zalkhali <zalkhali@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/02 06:17:33 by zalkhali          #+#    #+#             */
+/*   Updated: 2025/11/02 06:17:34 by zalkhali         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
-void    rotate_player(t_cub *cub, double angle)
+void	rotate_player(t_cub *cub, double angle)
 {
-    double  old_dir_x;
-    double  old_plane_x;
-    double  cos_val;
-    double  sin_val;
+	double	old_dir_x;
+	double	old_plane_x;
+	double	cos_val;
+	double	sin_val;
 
-    old_dir_x = cub->player.dir_x;
-    old_plane_x = cub->player.plane_x;
-    cos_val = cos(angle);
-    sin_val = sin(angle);
-    cub->player.dir_x = cub->player.dir_x * cos_val
-        - cub->player.dir_y * sin_val;
-    cub->player.dir_y = old_dir_x * sin_val
-        + cub->player.dir_y * cos_val;
-    cub->player.plane_x = cub->player.plane_x * cos_val
-        - cub->player.plane_y * sin_val;
-    cub->player.plane_y = old_plane_x * sin_val
-        + cub->player.plane_y * cos_val;
+	old_dir_x = cub->player.dir_x;
+	old_plane_x = cub->player.plane_x;
+	cos_val = cos(angle);
+	sin_val = sin(angle);
+	cub->player.dir_x = cub->player.dir_x * cos_val - cub->player.dir_y
+		* sin_val;
+	cub->player.dir_y = old_dir_x * sin_val + cub->player.dir_y * cos_val;
+	cub->player.plane_x = cub->player.plane_x * cos_val - cub->player.plane_y
+		* sin_val;
+	cub->player.plane_y = old_plane_x * sin_val + cub->player.plane_y * cos_val;
 }

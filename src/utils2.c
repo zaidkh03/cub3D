@@ -1,29 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_utils.c                                      :+:      :+:    :+:   */
+/*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: zalkhali <zalkhali@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/02 06:10:18 by zalkhali          #+#    #+#             */
-/*   Updated: 2025/11/02 06:10:19 by zalkhali         ###   ########.fr       */
+/*   Created: 2025/11/02 06:20:15 by zalkhali          #+#    #+#             */
+/*   Updated: 2025/11/02 06:22:39 by zalkhali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-int	is_line_empty(const char *line)
+void	free_split(char **arr)
 {
 	int	i;
 
-	if (!line)
-		return (1);
+	if (!arr)
+		return ;
 	i = 0;
-	while (line[i])
+	while (arr[i])
 	{
-		if (line[i] != ' ' && line[i] != '\t' && line[i] != '\n')
-			return (0);
+		free(arr[i]);
 		i++;
 	}
-	return (1);
+	free(arr);
+}
+
+void	fatal_cub(t_cub *cub, const char *msg)
+{
+	write_error(msg);
+	destroy_cub(cub);
+	exit(1);
 }
