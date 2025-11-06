@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zalkhali <zalkhali@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zalkhali <zalkhali@student.42amman.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/02 06:26:48 by zalkhali          #+#    #+#             */
-/*   Updated: 2025/11/02 06:26:49 by zalkhali         ###   ########.fr       */
+/*   Updated: 2025/11/05 01:16:07 by zalkhali         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@
 # define WIN_H 600
 # define TEX_W 64
 # define TEX_H 64
-# define MOVE_SPEED 0.01
-# define ROT_SPEED 0.01
+# define MOVE_SPEED 0.02
+# define ROT_SPEED 0.03
 
 # define K_ESC 65307
 # define K_W 119
