@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   errors.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chatgpt <chatgpt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/20 12:34:56 by chatgpt           #+#    #+#             */
+/*   Updated: 2024/05/20 12:34:56 by chatgpt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
 static void write_error(const char *msg)
@@ -19,14 +31,14 @@ void    fatal_parse(t_parse *parse, const char *msg)
         i++;
     }
     free_split(parse->map_lines);
-    gnl_cleanup();
+    gnl_cleanup(parse->fd);
     exit(1);
 }
 
 void    fatal_cub(t_cub *cub, const char *msg)
 {
     write_error(msg);
-    gnl_cleanup();
+    gnl_cleanup(-1);
     destroy_cub(cub);
     exit(1);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub3d.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chatgpt <chatgpt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/20 12:34:56 by chatgpt           #+#    #+#             */
+/*   Updated: 2024/05/20 12:34:56 by chatgpt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CUB3D_H
 # define CUB3D_H
 
@@ -117,6 +129,7 @@ typedef struct s_parse
     int     map_size;
     t_phase phase;
     char    *current_line;
+    int     fd;
 }   t_parse;
 
 int     parse_file(t_cub *cub, const char *path);
@@ -146,6 +159,6 @@ void    fatal_cub(t_cub *cub, const char *msg);
 void    set_texture_path(t_parse *parse, int index, const char *value);
 void    set_color_value(t_parse *parse, int index, const char *value);
 int     is_line_empty(const char *line);
-void    gnl_cleanup(void);
+void    gnl_cleanup(int fd);
 
 #endif

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_lines.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chatgpt <chatgpt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/20 12:34:56 by chatgpt           #+#    #+#             */
+/*   Updated: 2024/05/20 12:34:56 by chatgpt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
 static void remove_newline(char *line)
@@ -80,21 +92,17 @@ static void append_map_line(t_parse *parse, const char *line)
 void    parse_line_data(t_parse *parse, char *line)
 {
     remove_newline(line);
-    if (parse->phase == PH_TRAIL && !is_line_empty(line))
-        fatal_parse(parse, "Empty line inside map");
-    if (parse->phase == PH_TRAIL)
-        return ;
     if (is_line_empty(line))
     {
-        if (parse->phase != PH_HEADERS)
+        if (parse->phase == PH_MAP)
             parse->phase = PH_TRAIL;
         return ;
     }
+    if (parse->phase == PH_TRAIL)
+        fatal_parse(parse, "Empty line inside map");
+    if (parse->phase == PH_HEADERS && handle_header_line(parse, line))
+        return ;
     if (parse->phase == PH_HEADERS)
-    {
-        if (handle_header_line(parse, line))
-            return ;
         parse->phase = PH_MAP;
-    }
     append_map_line(parse, line);
 }

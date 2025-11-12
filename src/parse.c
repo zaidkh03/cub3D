@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chatgpt <chatgpt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/20 12:34:56 by chatgpt           #+#    #+#             */
+/*   Updated: 2024/05/20 12:34:56 by chatgpt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
 static void parse_init(t_parse *parse)
@@ -16,6 +28,7 @@ static void parse_init(t_parse *parse)
     parse->map_size = 0;
     parse->phase = PH_HEADERS;
     parse->current_line = NULL;
+    parse->fd = -1;
 }
 
 static void ensure_config(t_parse *parse)
@@ -39,6 +52,7 @@ static void parse_stream(t_parse *parse, int fd)
 {
     char    *line;
 
+    parse->fd = fd;
     line = get_next_line(fd);
     while (line)
     {
@@ -48,7 +62,8 @@ static void parse_stream(t_parse *parse, int fd)
         parse->current_line = NULL;
         line = get_next_line(fd);
     }
-    gnl_cleanup();
+    gnl_cleanup(fd);
+    parse->fd = -1;
 }
 
 int parse_file(t_cub *cub, const char *path)

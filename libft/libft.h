@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chatgpt <chatgpt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/20 12:34:56 by chatgpt           #+#    #+#             */
+/*   Updated: 2024/05/20 12:34:56 by chatgpt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LIBFT_H
 # define LIBFT_H
 
@@ -20,6 +32,6 @@ char            *ft_strchr(const char *s, int c);
 void            ft_putstr_fd(char *s, int fd);
 void            ft_putendl_fd(char *s, int fd);
 char            *get_next_line(int fd);
-void            gnl_cleanup(void);
+void            gnl_cleanup(int fd);
 
 #endif

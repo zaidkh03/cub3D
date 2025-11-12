@@ -1,7 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chatgpt <chatgpt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/20 12:34:56 by chatgpt           #+#    #+#             */
+/*   Updated: 2024/05/20 12:34:56 by chatgpt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "libft.h"
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 1024
+#endif
+#ifndef FD_MAX
+# define FD_MAX 1024
 #endif
 
 int             gnl_has_newline(char *s);
@@ -9,60 +24,106 @@ char            *gnl_join(char *s1, char *s2);
 char            *gnl_extract(char *stash);
 char            *gnl_trim(char *stash);
 
-static char     *g_stash;
-
-static int      read_to_stash(int fd)
+static char **stash_table(void)
 {
-    char    buffer[BUFFER_SIZE + 1];
-    int     bytes;
-    char    *tmp;
+    static char *stash[FD_MAX];
 
-    while (!gnl_has_newline(g_stash))
+    return (stash);
+}
+
+static int  read_to_stash(int fd)
+{
+    char        buffer[BUFFER_SIZE + 1];
+    int         bytes;
+    char        *tmp;
+    char        **stash;
+
+    stash = stash_table();
+    while (!gnl_has_newline(stash[fd]))
     {
         bytes = read(fd, buffer, BUFFER_SIZE);
-        if (bytes <= 0)
-            return (bytes >= 0);
-        buffer[bytes] = '\0';
-        tmp = gnl_join(g_stash, buffer);
-        if (!tmp)
+        if (bytes < 0)
+        {
+            gnl_cleanup(fd);
+            return (-1);
+        }
+        if (bytes == 0)
             return (0);
-        g_stash = tmp;
+        buffer[bytes] = '\0';
+        tmp = gnl_join(stash[fd], buffer);
+        if (!tmp)
+        {
+            stash[fd] = NULL;
+            gnl_cleanup(fd);
+            return (-1);
+        }
+        stash[fd] = tmp;
     }
     return (1);
 }
 
-static char     *finish_line(void)
+static char *finish_line(int fd)
 {
+    char    **stash;
     char    *line;
 
-    line = gnl_extract(g_stash);
+    stash = stash_table();
+    line = gnl_extract(stash[fd]);
     if (!line)
     {
-        free(g_stash);
-        g_stash = NULL;
+        gnl_cleanup(fd);
         return (NULL);
     }
-    g_stash = gnl_trim(g_stash);
+    stash[fd] = gnl_trim(stash[fd]);
     return (line);
 }
 
 char    *get_next_line(int fd)
 {
-    if (fd < 0 || BUFFER_SIZE <= 0)
+    int     status;
+    char    **stash;
+    char    *line;
+
+    if (fd < 0 || fd >= FD_MAX || BUFFER_SIZE <= 0)
         return (NULL);
-    if (!read_to_stash(fd))
+    stash = stash_table();
+    status = read_to_stash(fd);
+    if (status == -1)
+        return (NULL);
+    if (status == 0 && (!stash[fd] || !stash[fd][0]))
     {
-        free(g_stash);
-        g_stash = NULL;
+        gnl_cleanup(fd);
         return (NULL);
     }
-    return (finish_line());
+    line = finish_line(fd);
+    if (!line)
+        return (NULL);
+    return (line);
 }
 
-void    gnl_cleanup(void)
+void    gnl_cleanup(int fd)
 {
-    if (!g_stash)
+    char    **stash;
+    int     i;
+
+    stash = stash_table();
+    if (fd >= 0 && fd < FD_MAX)
+    {
+        if (stash[fd])
+        {
+            free(stash[fd]);
+            stash[fd] = NULL;
+        }
         return ;
-    free(g_stash);
-    g_stash = NULL;
+    }
+    i = 0;
+    while (i < FD_MAX)
+    {
+        if (stash[i])
+        {
+            free(stash[i]);
+            stash[i] = NULL;
+        }
+        i++;
+    }
 }
